@@ -1,28 +1,34 @@
 # Một tấm thiệp nhỏ
 
-Thiệp sinh nhật tĩnh, có thể tùy chỉnh cho người bạn thương. Trang dùng HTML, CSS và JavaScript thuần, không tải thư viện hoặc script bên ngoài.
+Thiệp sinh nhật tĩnh bằng HTML, CSS và JavaScript thuần, không tải thư viện hay script bên ngoài. Người nhận chỉ xem album, nghe nhạc, phóng to ảnh và chuyển slide.
 
-## Tùy chỉnh
+## Album
 
-Mở trang và chọn **Tùy chỉnh** để sửa tên người nhận, tên người gửi, lời chúc, màu thiệp và ảnh kỷ niệm. Nội dung được lưu trong trình duyệt hiện tại. Ảnh được thu nhỏ ngay trên thiết bị rồi lưu cục bộ; ảnh không được đưa vào liên kết chia sẻ.
+`index.html` hiển thị 8 ảnh trong `albums/`; mỗi ảnh có một lời chúc tương ứng trong mảng `SLIDE_MESSAGES` ở `js/app.js`. Sửa các câu trong mảng đó để cá nhân hóa nội dung. Nút **Trước/Tiếp** và phím mũi tên trái/phải chuyển giữa ảnh; bấm ảnh để phóng to.
 
-Liên kết có thể nhận các tham số `to`, `from`, `message` và `theme`. Ví dụ:
+## Gửi thiệp
+
+Gửi URL website hoặc URL `gift.html` để người nhận xem hộp quà trước khi mở album. Có thể đặt tên qua tham số `to` và `from`, ví dụ:
 
 ```text
-?to=Minh&from=An&message=Chuc%20mung%20sinh%20nhat&theme=mint
+?to=Minh&from=An
 ```
 
-Các giá trị hợp lệ cho `theme`: `rose`, `citrus`, `mint`, `berry`. Nội dung từ URL được hiển thị dưới dạng văn bản.
+Ảnh trong `albums/` cần được commit và deploy cùng website để người nhận thấy được. Khi repo công khai, các ảnh này cũng công khai.
 
 ## Chạy cục bộ
 
-Trong thư mục dự án, chạy:
+Trong terminal tại thư mục dự án, chạy lệnh sau để khởi động server và tự mở Chrome ở trang hộp quà:
+
+```sh
+python3 serve.py
+```
+
+Nhấn `Ctrl+C` để dừng server. Lệnh Python tích hợp vẫn dùng được nếu muốn tự mở trình duyệt:
 
 ```sh
 python3 -m http.server 8000
 ```
-
-Sau đó mở `http://localhost:8000`.
 
 
 

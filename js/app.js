@@ -1,33 +1,57 @@
 "use strict";
 
-const STORAGE_KEY = "little-birthday-card-v1";
+const ALBUM_PHOTOS = [
+    "albums/21E64A11-B50E-498D-97AE-5461C3F92CBB_1_100_o.jpeg",
+    "albums/5298BBD5-A05E-4446-B46D-77AC67271BB0_1_105_c.jpeg",
+    "albums/6C6DC970-F5BA-4353-BC11-84B545D1DE4B_1_105_c.jpeg",
+    "albums/9ABF176E-EE2B-4C91-9B06-1E4799E99240_1_105_c.jpeg",
+    "albums/B2F90E0E-A2E4-4026-9EE8-0A4A879342B2_1_105_c.jpeg",
+    "albums/B4F4D93C-C96B-4278-9408-5D8FA80C2E1F_1_105_c.jpeg",
+    "albums/B8645B31-AAA6-4578-A000-12911B83BA50_1_105_c.jpeg",
+    "albums/DFA18AE7-7574-4308-A9B0-D03B83592337_1_105_c.jpeg"
+];
 const THEMES = new Set(["rose", "citrus", "mint", "berry"]);
-const DEFAULTS = {
-    recipient: "Người thương",
-    sender: "Người luôn thương cậu",
-    message: "Chúc cậu một tuổi mới thật dịu dàng, nhiều tiếng cười và những điều cậu yêu.",
-    theme: "rose",
-    photo: ""
-};
+const SLIDE_MESSAGES = [
+    "Một ngày bình yên cạnh Em cũng đủ thành chuyến đi thật đẹp.",
+    "Anh thích ngắm Em thật tự nhiên như thế này.",
+    "Có Em bên cạnh, mọi khoảnh khắc đều đáng nhớ.",
+    "Anh muốn đi cùng Em qua thật nhiều ngày nữa.",
+    "Mỗi nụ cười của Em là điều Anh muốn giữ lại.",
+    "Anh cảm ơn Em vì những điều dịu dàng như bó hoa này.",
+    "Một góc nhỏ, một ngày đẹp, và người Anh thương.",
+    "Chúc Em tuổi mới luôn rạng rỡ, vui theo cách của Em."
+];
+const FINAL_GIFT_VIDEO = "Video/YTSave.to_YouTube_Media_yogjiBNWcH8_Happy-birthday-phong-cách-anh-da-đen_001_360p.mp4";
+const FINAL_GIFT_AUDIO = "Audio/Happy birthday phong cách anh da đen - (320 Kbps).mp3";
 
 const elements = {
-    dialog: document.querySelector("#editor-dialog"),
-    form: document.querySelector("#editor-form"),
     recipient: document.querySelector("#recipient"),
     sender: document.querySelector("#sender"),
     message: document.querySelector("#message"),
+    photoFrame: document.querySelector("#photo-frame"),
     portrait: document.querySelector("#portrait"),
-    photoPlaceholder: document.querySelector("#photo-trigger"),
-    photoInput: document.querySelector("#photo-input"),
-    photoPreview: document.querySelector("#editor-photo-preview"),
-    photoNote: document.querySelector("#photo-note"),
-    removePhoto: document.querySelector("#remove-photo"),
-    toast: document.querySelector("#toast")
+    portraitTrigger: document.querySelector("#portrait-trigger"),
+    photoCaption: document.querySelector("#photo-caption"),
+    albumControls: document.querySelector("#album-controls"),
+    slideCount: document.querySelector("#slide-count"),
+    slidePrevious: document.querySelector("#slide-previous"),
+    slideNext: document.querySelector("#slide-next"),
+    audio: document.querySelector("#birthday-audio"),
+    imageViewer: document.querySelector("#image-viewer"),
+    imageViewerPhoto: document.querySelector("#image-viewer-photo"),
+    heartLayer: document.querySelector("#heart-layer"),
+    finalGift: document.querySelector("#final-gift"),
+    openVideoGift: document.querySelector("#open-video-gift"),
+    videoDialog: document.querySelector("#video-dialog"),
+    giftVideo: document.querySelector("#gift-video"),
+    giftAudio: document.querySelector("#gift-audio")
 };
 
 let state = readInitialState();
-let draftPhoto;
-let toastTimer;
+let currentSlideIndex = 0;
+const visitedSlideIndexes = new Set([0]);
+let resumeBackgroundMusic = false;
+let backgroundMusicTime = 0;
 
 function cleanText(value, fallback, limit) {
     if (typeof value !== "string") return fallback;
@@ -35,194 +59,159 @@ function cleanText(value, fallback, limit) {
     return cleaned || fallback;
 }
 
-function readStoredState() {
-    try {
-        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-        return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
-    } catch {
-        return {};
-    }
-}
-
 function readInitialState() {
-    const stored = readStoredState();
     const params = new URLSearchParams(window.location.search);
-    const fromUrl = (key, alias) => params.get(key) ?? (alias ? params.get(alias) : null);
-    const theme = fromUrl("theme") ?? stored.theme;
-    const photo = typeof stored.photo === "string" && stored.photo.length <= 900000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(stored.photo)
-        ? stored.photo
-        : "";
+    const slides = ALBUM_PHOTOS.map((photo, index) => ({ photo, message: SLIDE_MESSAGES[index] }));
 
     return {
-        recipient: cleanText(fromUrl("to", "name") ?? stored.recipient, DEFAULTS.recipient, 40),
-        sender: cleanText(fromUrl("from") ?? stored.sender, DEFAULTS.sender, 40),
-        message: cleanText(fromUrl("message") ?? stored.message, DEFAULTS.message, 240),
-        theme: THEMES.has(theme) ? theme : DEFAULTS.theme,
-        photo
+        recipient: cleanText(params.get("to") ?? params.get("name"), "Em", 40),
+        sender: cleanText(params.get("from"), "Anh", 40),
+        theme: THEMES.has(params.get("theme")) ? params.get("theme") : "rose",
+        slides
     };
 }
 
-function renderCard() {
+function renderCard(direction = 0) {
+    const slide = state.slides[currentSlideIndex] || null;
     elements.recipient.textContent = state.recipient;
     elements.sender.textContent = state.sender;
-    elements.message.textContent = state.message;
+    elements.message.textContent = slide ? slide.message : state.message;
     document.body.dataset.theme = state.theme;
-    elements.portrait.hidden = !state.photo;
-    elements.photoPlaceholder.hidden = Boolean(state.photo);
-    if (state.photo) elements.portrait.src = state.photo;
+    elements.portraitTrigger.hidden = !slide;
+    elements.albumControls.hidden = state.slides.length < 2;
+    elements.finalGift.hidden = currentSlideIndex !== state.slides.length - 1 || visitedSlideIndexes.size < state.slides.length;
+    elements.slideCount.textContent = state.slides.length
+        ? `${String(currentSlideIndex + 1).padStart(2, "0")} / ${String(state.slides.length).padStart(2, "0")}`
+        : "01 / 01";
+    elements.photoCaption.textContent = slide
+        ? `KỶ NIỆM ${String(currentSlideIndex + 1).padStart(2, "0")} · ${state.recipient}`
+        : "NGÀY ĐẸP NHẤT LÀ NGÀY CÓ EM";
+    if (slide) {
+        elements.portrait.src = slide.photo;
+        elements.portrait.alt = `Kỷ niệm ${currentSlideIndex + 1} của ${state.recipient}`;
+    }
     else elements.portrait.removeAttribute("src");
+
+    if (direction && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const transitionClass = direction > 0 ? "slide-enter-next" : "slide-enter-previous";
+        elements.photoFrame.classList.remove("slide-enter-next", "slide-enter-previous");
+        elements.message.classList.remove("slide-enter-next", "slide-enter-previous");
+        void elements.photoFrame.offsetWidth;
+        elements.photoFrame.classList.add(transitionClass);
+        elements.message.classList.add(transitionClass);
+        window.setTimeout(() => {
+            elements.photoFrame.classList.remove(transitionClass);
+            elements.message.classList.remove(transitionClass);
+        }, 500);
+    }
 }
 
-function showToast(message) {
-    elements.toast.textContent = message;
-    elements.toast.classList.add("is-visible");
-    window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(() => elements.toast.classList.remove("is-visible"), 3000);
+function changeSlide(direction) {
+    if (state.slides.length < 2) return;
+    currentSlideIndex = (currentSlideIndex + direction + state.slides.length) % state.slides.length;
+    visitedSlideIndexes.add(currentSlideIndex);
+    renderCard(direction);
+    if (currentSlideIndex === state.slides.length - 1 && visitedSlideIndexes.size === state.slides.length) {
+        const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+        elements.finalGift.scrollIntoView({ behavior, block: "center" });
+    }
 }
 
-function openEditor() {
-    elements.form.elements.recipient.value = state.recipient;
-    elements.form.elements.sender.value = state.sender;
-    elements.form.elements.message.value = state.message;
-    elements.form.querySelector(`input[name="theme"][value="${state.theme}"]`).checked = true;
-    draftPhoto = undefined;
-    elements.photoNote.textContent = "Ảnh được thu nhỏ và lưu trên thiết bị này.";
-    updatePhotoTools(state.photo);
-    elements.photoInput.value = "";
-    elements.dialog.showModal();
-    elements.form.elements.recipient.focus();
+function startMusic() {
+    if (!elements.audio.paused) return;
+    elements.audio.play().catch(() => {});
 }
 
-function updatePhotoTools(photo) {
-    elements.photoPreview.hidden = !photo;
-    elements.photoPreview.src = photo || "";
-    elements.removePhoto.hidden = !photo;
+function sendHearts() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const hearts = document.createDocumentFragment();
+    const symbols = ["♥", "♡", "❤"];
+    for (let index = 0; index < 18; index += 1) {
+        const heart = document.createElement("span");
+        heart.className = "heart-particle";
+        heart.textContent = symbols[index % symbols.length];
+        heart.style.setProperty("--heart-left", `${Math.random() * 100}%`);
+        heart.style.setProperty("--heart-size", `${18 + Math.random() * 24}px`);
+        heart.style.setProperty("--heart-rise", `${-130 - Math.random() * 150}px`);
+        heart.style.setProperty("--heart-drift", `${Math.round((Math.random() - 0.5) * 120)}px`);
+        heart.style.setProperty("--heart-delay", `${Math.random() * 0.45}s`);
+        heart.style.setProperty("--heart-duration", `${1.2 + Math.random() * 0.8}s`);
+        heart.style.setProperty("--heart-turn", `${Math.round(Math.random() * 70 - 35)}deg`);
+        hearts.append(heart);
+    }
+    elements.heartLayer.replaceChildren(hearts);
+    window.setTimeout(() => elements.heartLayer.replaceChildren(), 2400);
 }
 
-function dataUrlFromBlob(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error("Không đọc được ảnh này."));
-        reader.readAsDataURL(blob);
+function openImageViewer(image) {
+    const source = image.currentSrc || image.src;
+    if (!source) return;
+    elements.imageViewerPhoto.src = source;
+    elements.imageViewerPhoto.alt = image.alt;
+    elements.imageViewer.showModal();
+    startMusic();
+    sendHearts();
+}
+
+function openVideoGift() {
+    if (visitedSlideIndexes.size < state.slides.length || currentSlideIndex !== state.slides.length - 1) return;
+    resumeBackgroundMusic = !elements.audio.paused;
+    backgroundMusicTime = elements.audio.currentTime;
+    elements.audio.pause();
+    elements.giftVideo.muted = true;
+    elements.videoDialog.showModal();
+    elements.giftVideo.src = FINAL_GIFT_VIDEO;
+    elements.giftAudio.src = FINAL_GIFT_AUDIO;
+    elements.giftVideo.load();
+    elements.giftAudio.load();
+    elements.giftAudio.play().catch(() => {
+        elements.giftVideo.muted = false;
     });
+    elements.giftVideo.play().catch(continueToFinalQr);
 }
 
-async function compressPhoto(file) {
-    const supportedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-    if (!supportedTypes.has(file.type)) throw new Error("Hãy chọn ảnh JPG, PNG hoặc WebP.");
-    if (file.size > 8 * 1024 * 1024) throw new Error("Ảnh cần nhỏ hơn 8 MB.");
-    if (typeof createImageBitmap !== "function") throw new Error("Trình duyệt này chưa hỗ trợ xử lý ảnh.");
+function stopVideoGift() {
+    elements.giftVideo.pause();
+    elements.giftVideo.removeAttribute("src");
+    elements.giftVideo.load();
+    elements.giftAudio.pause();
+    elements.giftAudio.removeAttribute("src");
+    elements.giftAudio.load();
+}
 
-    const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, 1000 / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    const context = canvas.getContext("2d", { alpha: false });
-    if (!context) {
-        bitmap.close();
-        throw new Error("Không thể xử lý ảnh trên thiết bị này.");
+function continueToFinalQr() {
+    const destination = new URL("qr.html", window.location.href);
+    if (resumeBackgroundMusic) {
+        destination.searchParams.set("resumeMusic", "1");
+        destination.searchParams.set("musicTime", String(backgroundMusicTime));
     }
-    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close();
-
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.8));
-    if (!blob) throw new Error("Không thể chuyển đổi ảnh này.");
-    const dataUrl = await dataUrlFromBlob(blob);
-    if (typeof dataUrl !== "string" || dataUrl.length > 850000) {
-        throw new Error("Ảnh sau khi nén vẫn quá lớn, hãy thử ảnh khác.");
-    }
-    return dataUrl;
+    stopVideoGift();
+    window.location.assign(destination.href);
 }
 
-function shareUrl() {
-    const url = new URL(window.location.href);
-    url.search = "";
-    url.searchParams.set("to", state.recipient);
-    url.searchParams.set("from", state.sender);
-    url.searchParams.set("message", state.message);
-    url.searchParams.set("theme", state.theme);
-    return url.toString();
-}
-
-async function shareCard() {
-    const url = shareUrl();
-    const text = `${state.recipient}, ${state.message} — ${state.sender}`;
-    try {
-        if (navigator.share) {
-            await navigator.share({ title: "Một tấm thiệp nhỏ", text, url });
-            return;
-        }
-        if (navigator.clipboard?.writeText) {
-            await navigator.clipboard.writeText(url);
-        } else {
-            const temporaryInput = document.createElement("textarea");
-            temporaryInput.value = url;
-            temporaryInput.setAttribute("readonly", "");
-            temporaryInput.style.position = "fixed";
-            temporaryInput.style.opacity = "0";
-            document.body.append(temporaryInput);
-            temporaryInput.select();
-            const copied = document.execCommand("copy");
-            temporaryInput.remove();
-            if (!copied) throw new Error("Clipboard unavailable");
-        }
-        showToast("Đã chép liên kết thiệp. Ảnh chỉ lưu trên thiết bị của bạn.");
-    } catch (error) {
-        if (error.name !== "AbortError") showToast("Không thể chia sẻ lúc này. Hãy thử lại nhé.");
-    }
-}
-
-document.querySelectorAll('[data-action="edit"]').forEach(button => button.addEventListener("click", openEditor));
-document.querySelectorAll('[data-action="share"]').forEach(button => button.addEventListener("click", shareCard));
-elements.photoPlaceholder.addEventListener("click", openEditor);
-document.querySelector("#close-editor").addEventListener("click", () => elements.dialog.close());
-document.querySelector("#cancel-editor").addEventListener("click", () => elements.dialog.close());
-
-elements.removePhoto.addEventListener("click", () => {
-    draftPhoto = "";
-    elements.photoInput.value = "";
-    updatePhotoTools("");
-    elements.photoNote.textContent = "Ảnh sẽ được gỡ khi bạn lưu thiệp.";
+elements.slidePrevious.addEventListener("click", () => changeSlide(-1));
+elements.slideNext.addEventListener("click", () => changeSlide(1));
+elements.portraitTrigger.addEventListener("click", () => openImageViewer(elements.portrait));
+document.querySelector("#close-image-viewer").addEventListener("click", () => elements.imageViewer.close());
+elements.imageViewer.addEventListener("click", event => {
+    if (event.target === elements.imageViewer) elements.imageViewer.close();
 });
-
-elements.photoInput.addEventListener("change", async event => {
-    const [file] = event.target.files;
-    if (!file) return;
-    elements.photoNote.textContent = "Đang thu nhỏ ảnh trên thiết bị…";
-    try {
-        draftPhoto = await compressPhoto(file);
-        updatePhotoTools(draftPhoto);
-        elements.photoNote.textContent = "Ảnh đã sẵn sàng và chỉ lưu trên thiết bị này.";
-    } catch (error) {
-        elements.photoNote.textContent = error.message;
-        elements.photoInput.value = "";
-    }
+elements.imageViewer.addEventListener("close", () => elements.heartLayer.replaceChildren());
+elements.openVideoGift.addEventListener("click", openVideoGift);
+elements.videoDialog.addEventListener("cancel", event => event.preventDefault());
+elements.giftVideo.addEventListener("ended", continueToFinalQr);
+elements.giftVideo.addEventListener("error", () => {
+    if (elements.videoDialog.open) continueToFinalQr();
 });
-
-elements.form.addEventListener("submit", event => {
-    event.preventDefault();
-    const formData = new FormData(elements.form);
-    const selectedTheme = formData.get("theme");
-    const nextState = {
-        recipient: cleanText(formData.get("recipient"), DEFAULTS.recipient, 40),
-        sender: cleanText(formData.get("sender"), DEFAULTS.sender, 40),
-        message: cleanText(formData.get("message"), DEFAULTS.message, 240),
-        theme: THEMES.has(selectedTheme) ? selectedTheme : DEFAULTS.theme,
-        photo: draftPhoto === undefined ? state.photo : draftPhoto
-    };
-
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
-    } catch {
-        showToast("Không lưu được. Hãy thử gỡ ảnh hoặc chọn ảnh nhỏ hơn.");
-        return;
-    }
-    state = nextState;
-    renderCard();
-    elements.dialog.close();
-    showToast("Đã lưu tấm thiệp trên thiết bị này.");
+document.addEventListener("keydown", event => {
+    if (elements.imageViewer.open || elements.videoDialog.open || event.target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
+    if (event.key === "ArrowRight") changeSlide(1);
+    if (event.key === "ArrowLeft") changeSlide(-1);
 });
 
 renderCard();
+startMusic();
+
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.body.classList.add("page-opening");
+}
