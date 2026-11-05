@@ -1,61 +1,154 @@
-<html>
-
+<!doctype html>
+<html lang="vi">
 <head>
-    <title>Happy Birthday</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fff8f1">
+    <meta name="description" content="Một tấm thiệp sinh nhật nhỏ, viết riêng cho người mình thương.">
+    <title>Một ngày của người mình thương</title>
     <link rel="stylesheet" href="style.css">
+    <script src="js/app.js" defer></script>
 </head>
+<body data-theme="rose">
+    <header class="site-header">
+        <a class="wordmark" href="./" aria-label="Thiệp sinh nhật">
+            <span class="wordmark-mark" aria-hidden="true">✳</span>
+            <span>một tấm thiệp <strong>nhỏ</strong></span>
+        </a>
+        <nav class="header-actions" aria-label="Thao tác thiệp">
+            <button class="button button-quiet" type="button" data-action="edit">Tùy chỉnh</button>
+            <button class="button button-dark" type="button" data-action="share">Gửi lời chúc</button>
+        </nav>
+    </header>
 
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="loader">
-                <button id="play">Start</button>
-            </div>
-        </div>
-    </div>
-    <audio class="song" controls loop>
-        <source src="music.mp3">
-        </source>
-        Your browser isn't invited for super fun audio time.
-    </audio>
-    <canvas id="confetti"></canvas>
-    <div class="main">
-        <div class="container pt-5">
-            <div class="row">
-
-                <div class="col-12 col-xl-6 mx-auto">
-                    <img src="img/banner.png" alt="">
+    <main>
+        <section class="hero" aria-labelledby="greeting-title">
+            <div class="hero-copy">
+                <p class="eyebrow"><span class="eyebrow-flower" aria-hidden="true">✿</span> HÔM NAY LÀ NGÀY CỦA CẬU</p>
+                <h1 id="greeting-title">Chúc mừng<br>sinh nhật,<br><span id="recipient">Người thương</span><span class="title-period">.</span></h1>
+                <p class="letter" id="message">Chúc cậu một tuổi mới thật dịu dàng, nhiều tiếng cười và những điều cậu yêu.</p>
+                <div class="signature">
+                    <span>THƯƠNG THẬT NHIỀU,</span>
+                    <strong id="sender">Người luôn thương cậu</strong>
                 </div>
-
-                <div class="col-12  text-center">
-                    <div id="name" class="area">Gaurav</div>
-                </div>
-
-                <div class="col-12 text-center">
-                    <div class="type-wrap">
-                        <div id="typed-strings" class="typing">
-                            <h2>Happy Birthday <i id="nae">Gaurav</i></h2>
-                            <h2>Have a wonderful day</h2>
-                            <h2>Filled with joy and happiness.</h2>
-                        </div>
-                        <span id="typed" style="white-space:pre;"></span>
-                    </div>
-                </div>
-
-                <div class="col-12 col-xl-3 cake">
-                    <img src="img/cake.gif" alt="">
+                <div class="hero-actions">
+                    <button class="button button-coral" type="button" data-action="edit">Viết lời chúc của bạn <span aria-hidden="true">↗</span></button>
+                    <button class="text-button" type="button" data-action="share">Chia sẻ thiệp</button>
                 </div>
             </div>
-        </div>
-        <img src="img/Balloon-Border.png" width="100%" class="balloon-border">
-    </div>
+
+            <div class="hero-art" aria-label="Ảnh kỷ niệm">
+                <span class="art-note">một tuổi mới<br>thật rực rỡ nhé!</span>
+                <div class="photo-frame" id="photo-frame">
+                    <img class="portrait" id="portrait" alt="Ảnh kỷ niệm của hai bạn" hidden>
+                    <button class="photo-placeholder" id="photo-trigger" type="button" aria-label="Thêm ảnh kỷ niệm">
+                        <span class="photo-plus" aria-hidden="true">+</span>
+                        <span class="photo-title">Ảnh của chúng mình</span>
+                        <span class="photo-hint">Chạm để thêm một kỷ niệm</span>
+                    </button>
+                    <span class="photo-caption" id="photo-caption">NGÀY ĐẸP NHẤT LÀ NGÀY CÓ CẬU</span>
+                </div>
+                <img class="cake-art" src="img/cake.svg" alt="Bánh sinh nhật nhiều màu">
+                <span class="sparkle sparkle-one" aria-hidden="true">✳</span>
+                <span class="sparkle sparkle-two" aria-hidden="true">✦</span>
+            </div>
+        </section>
+
+        <section class="little-things" aria-labelledby="little-things-title">
+            <div class="section-intro">
+                <p class="eyebrow">LỜI NHẮN NHỎ</p>
+                <h2 id="little-things-title">Thêm một vòng quanh mặt trời,<br>thêm nhiều điều để thương.</h2>
+            </div>
+            <div class="love-notes">
+                <article class="love-note">
+                    <span class="note-number">01</span>
+                    <h3>Luôn là chính cậu</h3>
+                    <p>Vì phiên bản đáng yêu nhất của cậu chẳng cần thay đổi gì cả.</p>
+                </article>
+                <article class="love-note">
+                    <span class="note-number">02</span>
+                    <h3>Thật nhiều niềm vui</h3>
+                    <p>Mong những điều cậu chờ đợi sẽ lần lượt tìm đến.</p>
+                </article>
+                <article class="love-note">
+                    <span class="note-number">03</span>
+                    <h3>Và luôn có tớ</h3>
+                    <p>Ở đây, cổ vũ cậu trong mọi chương mới của cuộc đời.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="song-row" aria-label="Nhạc sinh nhật">
+            <div class="song-copy">
+                <span class="song-mark" aria-hidden="true">♫</span>
+                <div>
+                    <p class="eyebrow">BẬT MỘT BÀI NHẠC NHÉ</p>
+                    <p class="song-title">Giai điệu cho ngày đặc biệt</p>
+                </div>
+            </div>
+            <audio controls preload="none" aria-label="Phát nhạc sinh nhật">
+                <source src="music.mp3" type="audio/mpeg">
+                Trình duyệt của bạn không hỗ trợ phát âm thanh.
+            </audio>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <span>Làm bằng tất cả sự dịu dàng.</span>
+        <button class="text-button" type="button" data-action="edit">Sửa tấm thiệp</button>
+    </footer>
+
+    <dialog class="editor-dialog" id="editor-dialog" aria-labelledby="editor-title">
+        <form class="editor-form" id="editor-form">
+            <div class="editor-heading">
+                <div>
+                    <p class="eyebrow">TẤM THIỆP CỦA BẠN</p>
+                    <h2 id="editor-title">Viết điều muốn nói</h2>
+                </div>
+                <button class="close-button" id="close-editor" type="button" aria-label="Đóng phần tùy chỉnh">×</button>
+            </div>
+
+            <label class="field-label" for="recipient-input">Tên người nhận
+                <input id="recipient-input" name="recipient" type="text" maxlength="40" autocomplete="off" required>
+            </label>
+            <label class="field-label" for="sender-input">Tên của bạn
+                <input id="sender-input" name="sender" type="text" maxlength="40" autocomplete="off" required>
+            </label>
+            <label class="field-label" for="message-input">Lời chúc
+                <textarea id="message-input" name="message" rows="4" maxlength="240" required></textarea>
+            </label>
+
+            <fieldset class="theme-field">
+                <legend class="field-label">Chọn màu thiệp</legend>
+                <div class="theme-options">
+                    <label class="theme-choice theme-rose"><input type="radio" name="theme" value="rose"><span class="theme-swatch" aria-hidden="true"></span><span>Hoa hồng</span></label>
+                    <label class="theme-choice theme-citrus"><input type="radio" name="theme" value="citrus"><span class="theme-swatch" aria-hidden="true"></span><span>Nắng vàng</span></label>
+                    <label class="theme-choice theme-mint"><input type="radio" name="theme" value="mint"><span class="theme-swatch" aria-hidden="true"></span><span>Bạc hà</span></label>
+                    <label class="theme-choice theme-berry"><input type="radio" name="theme" value="berry"><span class="theme-swatch" aria-hidden="true"></span><span>Mâm xôi</span></label>
+                </div>
+            </fieldset>
+
+            <div class="photo-field">
+                <div>
+                    <p class="field-label">Ảnh kỷ niệm</p>
+                    <p class="field-help" id="photo-note">Ảnh được thu nhỏ và lưu trên thiết bị này.</p>
+                </div>
+                <div class="photo-tools">
+                    <label class="button button-quiet upload-button" for="photo-input">Chọn ảnh
+                        <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp">
+                    </label>
+                    <button class="text-button remove-photo" id="remove-photo" type="button" hidden>Gỡ ảnh</button>
+                </div>
+                <img class="editor-photo-preview" id="editor-photo-preview" alt="Xem trước ảnh đã chọn" hidden>
+            </div>
+
+            <div class="editor-actions">
+                <button class="button button-quiet" id="cancel-editor" type="button">Để sau</button>
+                <button class="button button-dark" type="submit">Lưu tấm thiệp</button>
+            </div>
+        </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
-<script src="https://unpkg.com/magic-snowflakes/dist/snowflakes.min.js"></script>
-<script src="js/jquery.js"></script>
-<script src="js/typed.min.js"></script>
-<script src="js/script.js"></script>
-
 </html>
