@@ -4,99 +4,52 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#fff8f1">
-    <meta name="description" content="Một tấm thiệp sinh nhật nhỏ, viết riêng cho người mình thương.">
-    <title>Một ngày của người mình thương</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="js/app.js" defer></script>
+    <meta name="description" content="Một món quà sinh nhật nhỏ đang chờ được mở.">
+    <title>Một món quà dành cho Em</title>
+    <link rel="stylesheet" href="gift.css">
+    <script src="js/gift.js" defer></script>
 </head>
-<body data-theme="rose">
-    <header class="site-header">
-        <a class="wordmark" href="gift.html" aria-label="Mở lại hộp quà">
-            <span class="wordmark-mark" aria-hidden="true">✳</span>
+<body class="gift-page">
+    <header class="gift-header">
+        <a class="gift-wordmark" href="birthday.html" aria-label="Đến tấm thiệp">
+            <span class="gift-wordmark-mark" aria-hidden="true">✳</span>
             <span>một tấm thiệp <strong>nhỏ</strong></span>
         </a>
+        <span class="header-date">GỬI RIÊNG CHO EM <span aria-hidden="true">♡</span></span>
     </header>
 
-    <main>
-        <section class="hero" aria-labelledby="greeting-title">
-            <div class="hero-copy">
-                <p class="eyebrow"><span class="eyebrow-flower" aria-hidden="true">✿</span> HÔM NAY LÀ NGÀY CỦA EM</p>
-                <h1 id="greeting-title">Chúc mừng<br>sinh nhật,<br><span id="recipient">Em</span><span class="title-period">.</span></h1>
-            </div>
+    <main class="gift-main">
+        <section class="gift-stage" aria-labelledby="gift-title">
+            <p class="gift-eyebrow"><span aria-hidden="true">✿</span> CÓ MỘT ĐIỀU NHỎ MUỐN GỬI EM</p>
+            <h1 id="gift-title">Một món quà<br>dành cho <em>Em.</em></h1>
+            <p class="gift-invitation">Chạm nhẹ thôi, bất ngờ đang đợi ở bên trong.</p>
 
-            <div class="hero-art" aria-label="Ảnh kỷ niệm">
-                <span class="art-note">một tuổi mới<br>thật rực rỡ nhé!</span>
-                <div class="floating-scribbles" aria-hidden="true">
-                    <span class="scribble scribble-heart">♡</span>
-                    <span class="scribble scribble-star">✦</span>
-                    <span class="scribble scribble-flower">✿</span>
-                    <span class="scribble scribble-petal">❀</span>
-                    <span class="scribble scribble-heart-extra">♥</span>
-                    <span class="scribble scribble-star-extra">✧</span>
-                    <span class="scribble scribble-flower-extra">✿</span>
-                </div>
-                <div class="photo-frame" id="photo-frame">
-                    <button class="portrait-trigger" id="portrait-trigger" type="button" aria-label="Phóng to ảnh kỷ niệm">
-                        <img class="portrait" id="portrait" alt="Ảnh kỷ niệm của hai bạn">
-                    </button>
-                    <span class="photo-badge" aria-hidden="true">♡</span>
-                    <span class="photo-caption" id="photo-caption">NGÀY ĐẸP NHẤT LÀ NGÀY CÓ EM</span>
-                </div>
-                <nav class="album-controls" id="album-controls" aria-label="Chuyển ảnh kỷ niệm" hidden>
-                    <button class="album-arrow" id="slide-previous" type="button" aria-label="Ảnh trước">←</button>
-                    <span class="album-count" id="slide-count" aria-live="polite">01 / 01</span>
-                    <button class="button button-dark album-next" id="slide-next" type="button">Tiếp <span aria-hidden="true">→</span></button>
-                </nav>
-                <span class="sparkle sparkle-one" aria-hidden="true">✳</span>
-                <span class="sparkle sparkle-two" aria-hidden="true">✦</span>
-            </div>
-            <div class="slide-letter" aria-live="polite" aria-atomic="true">
-                <p class="letter" id="message">Anh muốn giữ lại khoảnh khắc này thật lâu.</p>
-                <div class="signature">
-                    <span>THƯƠNG THẬT NHIỀU,</span>
-                    <strong id="sender">Anh</strong>
-                </div>
-            </div>
-            <section class="final-gift" id="final-gift" aria-live="polite" hidden>
-                <p class="final-gift-message">Em nghĩ đã hết quà ư, nô nô, xem tiếp nhé :)))</p>
-                <button class="button button-coral final-gift-button" id="open-video-gift" type="button">Mở quà <span aria-hidden="true">♡</span></button>
-            </section>
-        </section>
+            <a class="gift-open" id="open-gift" href="birthday.html" aria-label="Mở món quà sinh nhật">
+                <span class="gift-illustration" aria-hidden="true">
+                    <span class="gift-spark gift-spark-one">✦</span>
+                    <span class="gift-spark gift-spark-two">✳</span>
+                    <span class="gift-spark gift-spark-three">♡</span>
+                    <span class="gift-shadow"></span>
+                    <span class="gift-box">
+                        <span class="gift-bow">
+                            <span class="bow-loop bow-loop-left"></span>
+                            <span class="bow-loop bow-loop-right"></span>
+                            <span class="bow-knot"></span>
+                        </span>
+                        <span class="gift-lid"><span class="gift-ribbon lid-ribbon"></span></span>
+                        <span class="gift-base"><span class="gift-ribbon base-ribbon"></span></span>
+                    </span>
+                </span>
+                <span class="gift-open-label">Mở món quà <span aria-hidden="true">↗</span></span>
+            </a>
 
-        <section class="song-row" aria-label="Nhạc sinh nhật">
-            <div class="song-copy">
-                <span class="song-mark" aria-hidden="true">♫</span>
-                <div>
-                    <p class="eyebrow">BẬT MỘT BÀI NHẠC NHÉ</p>
-                    <p class="song-title">Giai điệu cho ngày đặc biệt</p>
-                </div>
-            </div>
-            <audio id="birthday-audio" controls autoplay loop preload="auto" aria-label="Phát nhạc sinh nhật">
-                <source src="music.mp3" type="audio/mpeg">
-                Trình duyệt của bạn không hỗ trợ phát âm thanh.
-            </audio>
+            <p class="gift-footnote">Một chút yêu thương, gói riêng cho ngày của Em.</p>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <span>Làm bằng tất cả sự dịu dàng.</span>
+    <footer class="gift-footer">
+        <span>Được gói bằng tất cả sự dịu dàng.</span>
+        <span class="footer-spark" aria-hidden="true">✳</span>
     </footer>
-
-    <dialog class="image-viewer" id="image-viewer" aria-label="Ảnh kỷ niệm phóng to">
-        <button class="close-button image-viewer-close" id="close-image-viewer" type="button" aria-label="Đóng ảnh phóng to">×</button>
-        <img class="image-viewer-photo" id="image-viewer-photo" alt="">
-        <div class="heart-layer" id="heart-layer" aria-hidden="true"></div>
-    </dialog>
-
-    <dialog class="video-dialog" id="video-dialog" aria-labelledby="video-dialog-title">
-        <div class="video-dialog-header">
-            <h2 class="video-dialog-title" id="video-dialog-title">Nhớ xem hết video nhé, còn nữa</h2>
-        </div>
-        <div class="video-frame-wrap">
-            <video class="gift-video" id="gift-video" playsinline preload="none" aria-label="Video món quà cuối"></video>
-            <audio id="gift-audio" preload="none" aria-hidden="true"></audio>
-        </div>
-    </dialog>
-
 </body>
 </html>

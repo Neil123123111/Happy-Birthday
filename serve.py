@@ -10,7 +10,7 @@ from urllib.request import urlopen
 HOST = "127.0.0.1"
 PORT = 8000
 ROOT = Path(__file__).resolve().parent
-URL = f"http://{HOST}:{PORT}/gift.html"
+URL = f"http://{HOST}:{PORT}/"
 
 handler = partial(SimpleHTTPRequestHandler, directory=str(ROOT))
 try:
