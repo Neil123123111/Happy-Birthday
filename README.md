@@ -24,6 +24,5 @@ python3 -m http.server 8000
 
 Sau đó mở `http://localhost:8000`.
 
-## Git remote
 
-Repo nguồn được giữ dưới tên `upstream`; nhánh hiện không tracking remote này. Khi tạo repo của riêng bạn, thêm URL repo đó dưới tên `origin` trước khi đẩy mã lên.
+
